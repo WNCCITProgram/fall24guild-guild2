@@ -47,7 +47,7 @@
 ## *AUTHORS*
 - **[Jonathan Georgiades](https://github.com/georgiajWNCC)**
 - **[Richard Dobson](https://github.com/)**
-- **[Abbigail Rath](https://github.com/)**
+- **[Abbigail Rath](https://github.com/abbi0)**
 
 ## *CODE OF CONDUCT*
 
