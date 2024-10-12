@@ -1,8 +1,7 @@
 # <code style="color : darkorange">10/12/24 Psuedo Code for Guild 2 Project</code>
-# <code style="color : darkorange">Description: Fuel service company framework</code>
-# <code style="color : darkorange">text</code>
+# <code style="color : darkorange">Description: Fuel service company framework</code><code style="color : darkorange">text</code>
 
-<code style="color : darkorange">
+# <code style="color : darkorange">
 """
 Generally speaking, the purpose of this program is to provide a simple interface to establish and track the information relating to a fuel company's customers and their tanks
 A simple graphical interface, file writing/reading
