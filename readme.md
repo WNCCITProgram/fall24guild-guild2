@@ -1,11 +1,12 @@
 # **WNCC Computer Science**
 
-## **Guild 2 Java Project**
+## **Guild 2 Python Project**
 
 ## *INTRODUCTION*
-- The Guild 2 Java Project is a java coding collaborative Team project for our Introduction to Computer Science course at Western Nebraska Community College.
-- The project will demostrate the application of our programming and problem solving skills to create a functional and user-friendly system using java.
+- The Guild 2 Python Project is a python coding collaborative Team project for our Introduction to Computer Science course at Western Nebraska Community College.
+- The project will demostrate the application of our programming and problem solving skills to create a functional and user-friendly system using python.
 - Along with providing a practical application of the programming concepts learned during our course.
+- 
 
 ## *REPOSITORY LINK*
 - https://github.com/WNCCITProgram/fa24-guild-guild2
