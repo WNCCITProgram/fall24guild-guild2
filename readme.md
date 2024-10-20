@@ -7,16 +7,16 @@
 - The project will demostrate the application of our programming and problem solving skills to create a functional and user-friendly system using python.
 - Along with providing a practical application of the programming concepts learned during our course.
 
-## *PROJECT OVERVIEW
+## *PROJECT OVERVIEW*
 •	Project Name: [Guild 2 Bulk Fuel Management System]
 •	Project Owners: [Richard Dobson][Jonathan Georgiades][Abbigail Rath]
 •	Project Goal: [Provide a simplified interface for users to establish and track information related to a fuel   company’s customers, and their fuel tanks.]
 •	Stakeholders: [Project Owners]
 
-## *PROJECT BACKGROUND SCENARIO
+## *PROJECT BACKGROUND SCENARIO*
 - A bulk fuel management logistics company requires a simplified and user-friendly GUI program that will incorporate customer information into a database.  The program must be able to check fuel status of the customer's fuel tank and generate an output of the the ten lowest fuel tanks, in order to alert the logistics company that the customer will require delivery of a new tank of fuel.
 
-## *PROJECT PLAN
+## *PROJECT PLAN*
 The guild proposes the creation of a GUI bulk fuel management system program.  The program will incorporate a customer information database, from data derived from an input form; to create new objects.  It will take inputs manually (with an unimplemented plan for automatic API calls to a monitor vendor) for the percentage (%) of fuel remaining in a propane or diesel tank.  A “push button” will prompt a “check the status” of the tanks and generate an output of the ten lowest tanks for service/delivery.  The stretch goals for the project will be to involve other related information and/or services.  At a minimum, the goals of the project will be to display the following concepts:
 
 I.	GUI interface (UX Design)
@@ -53,7 +53,7 @@ I.	GUI interface (UX Design)
       i.	Example: SQLite3, that integrates the SQLite database with python.
 - In general, the purpose of this program will be to provide a simple interface for users to establish and track the information related to a fuel company's customers and their fuel tanks.
 
-## *PROJECT MILESTONES
+## *PROJECT MILESTONES*
   1. Week 8:Planning and Pseudocode
   2. Week 9:Feul Management OOP.
   3. Week 10:Feul Management OOP.
@@ -64,23 +64,23 @@ I.	GUI interface (UX Design)
   8. Week 15: Project Completion
   9.Week 16: Project Presentation
 
-## *SYSTEM DESIGN
+## *SYSTEM DESIGN*
   1. Utilize NumPy for scientific computation.
   2. Utilize SQLite3 for database intergration.
   3. API call to monitor vendor.
 
-## *USER INTERFACE DESIGN
+## *USER INTERFACE DESIGN*
   1. GUI window
   2. Graphical interface for file writing and reading.
   3. Input forms for customer data and fuel tank information.
   4. Action buttons for check status, add customer, remove customer, save or load a form.
 
-## *TESTING AND DEBUGGING
+## *TESTING AND DEBUGGING*
   1. Conduct thorough testing to identify and fix bugs. 
   2. Ensure data accuracy and software reliability.
   3. Error handling. 
 
-## *DOCUMENTATION
+## *DOCUMENTATION*
   1. Document project's code and functions.
   2. Prepare presentation on project's development and features.
 
