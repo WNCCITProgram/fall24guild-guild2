@@ -54,35 +54,35 @@ I.	GUI interface (UX Design)
 - In general, the purpose of this program will be to provide a simple interface for users to establish and track the information related to a fuel company's customers and their fuel tanks.
 
 ## *PROJECT MILESTONES
-# - Week 8:Planning and Pseudocode
-# - Week 9:Feul Management OOP.
-# - Week 10:Feul Management OOP.
-# - Week 11: Feul Management OOP.
-# - Week 12:API 
-# - Week 13: GUI
-# - Week 14: GUI
-# - Week 15: Project Completion
-# - Week 16: Project Presentation
+  1. Week 8:Planning and Pseudocode
+  2. Week 9:Feul Management OOP.
+  3. Week 10:Feul Management OOP.
+  4. Week 11: Feul Management OOP.
+  5. Week 12:API 
+  6. Week 13: GUI
+  7. Week 14: GUI
+  8. Week 15: Project Completion
+  9.Week 16: Project Presentation
 
 ## *SYSTEM DESIGN
-# - Utilize NumPy for scientific computation.
-# - Utilize SQLite3 for database intergration.
-# - API call to monitor vendor.
+  1. Utilize NumPy for scientific computation.
+  2. Utilize SQLite3 for database intergration.
+  3. API call to monitor vendor.
 
 ## *USER INTERFACE DESIGN
-# - GUI window
-# - Graphical interface for file writing and reading.
-# - Input forms for customer data and fuel tank information.
-# - Action buttons for check status, add customer, remove customer, save or load a form.
+  1. GUI window
+  2. Graphical interface for file writing and reading.
+  3. Input forms for customer data and fuel tank information.
+  4. Action buttons for check status, add customer, remove customer, save or load a form.
 
 ## *TESTING AND DEBUGGING
-# - Conduct thorough testing to identify and fix bugs. 
-# - Ensure data accuracy and software reliability.
-# - Error handling. 
+  1. Conduct thorough testing to identify and fix bugs. 
+  2. Ensure data accuracy and software reliability.
+  3. Error handling. 
 
 ## *DOCUMENTATION
-# - Document project's code and functions.
-# - Prepare presentation on project's development and features.
+  1. Document project's code and functions.
+  2. Prepare presentation on project's development and features.
 
 
 
@@ -90,35 +90,35 @@ I.	GUI interface (UX Design)
 - https://github.com/WNCCITProgram/fa24-guild-guild2
 
 ## *INSTALLATION*
-- To install:
+I. To install:
 
-1. Clone repository: **`git clone https://github.com/WNCCITProgram/fa24-guild-guild2.git`**
-2. Navigate to the project directory: **`cd fa24-guild-guild2`**
-3. Install dependencies: **`npm install`**
-4. Build the project: **`npm run build`**
-5. Start the project: **`npm start`**
+  1. Clone repository: **`git clone https://github.com/WNCCITProgram/fa24-guild-guild2.git`**
+  2. Navigate to the project directory: **`cd fa24-guild-guild2`**
+  3. Install dependencies: **`npm install`**
+  4. Build the project: **`npm run build`**
+  5. Start the project: **`npm start`**
 
 ## *USEAGE*
-- To use Guild 2 Java Project:
+I. To use Guild 2 Java Project:
 
-1. Open the project in a code editor.
-2. Modify the source code to fit your needs.
-3. Build project: **`npm run build`**
-4. Start project: **`npm start`**
-5. Use the project as desired.
+  1. Open the project in a code editor.
+  2. Modify the source code to fit your needs.
+  3. Build project: **`npm run build`**
+  4. Start project: **`npm start`**
+  5. Use the project as desired.
 
 
 ## *CONTRIBUTING*
-- To contribute:
+I. To contribute:
 
-1. **Fork** repository.
-2. Create **new branch** for your changes.
-3. **Make changes**.
-4. **Write tests** for changes.
-5. **Run tests** to see if they pass.
-6. **Commit changes**.
-7. **Push** your changes to your forked repository.
-8. Submit **pull** request.
+  1. **Fork** repository.
+  2. Create **new branch** for your changes.
+  3. **Make changes**.
+  4. **Write tests** for changes.
+  5. **Run tests** to see if they pass.
+  6. **Commit changes**.
+  7. **Push** your changes to your forked repository.
+  8. Submit **pull** request.
 
 ## *LICENSE*
 - Currently no licenses for the project have been established.
