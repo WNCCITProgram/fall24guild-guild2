@@ -78,7 +78,7 @@ class Customers:
     
     
 class Tanks:
-    def __init__(self, tied_customer, serial, capacity, manufacturer, year, fuel_type, rental):
+    def __init__(self, tied_customer="", serial="", capacity="", manufacturer="", year="", fuel_type="", rental=""):
         # for the purposes of coursework, assume all tanks are filed as single units, just one tank at a time
         
         # the customer number of the customer that owns/has this tank
@@ -120,6 +120,9 @@ class Tanks:
     
     def get_rental(self):
         return self._rental
+    
+    def get_all(self):
+        return f'{self._tied_customer} {self._serial} {self._capacity} {self._manufacturer} {self._year} {self._fuel_type} {self._rental}'
         
     # setter methods
     #######################################################################
