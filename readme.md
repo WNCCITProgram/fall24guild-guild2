@@ -56,12 +56,17 @@ I.	GUI interface (UX Design)
 ## *PROJECT MILESTONES*
   1. Week 8:Planning and Pseudocode
   2. Week 9:Feul Management OOP.
-  3. Week 10:Feul Management OOP.
-  4. Week 11: Feul Management OOP.
-  5. Week 12:API 
-  6. Week 13: GUI
-  7. Week 14: GUI
-  8. Week 15: Project Completion
+     - Initial pseudocode/code:
+      1. Create csv writer
+      2. Create and set up database
+      3. Create classes for customer and fuel tank objects.
+      4. Create GUI framework
+  4. Week 10:Feul Management OOP.
+  5. Week 11: Feul Management OOP.
+  6. Week 12:API 
+  7. Week 13: GUI
+  8. Week 14: GUI
+  9. Week 15: Project Completion
   9.Week 16: Project Presentation
 
 ## *SYSTEM DESIGN*
