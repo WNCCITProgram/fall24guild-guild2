@@ -1,6 +1,9 @@
-# **WNCC Computer Science**
+<h1 align="center"> WNCC Computer Science</h1>
 
-## **Guild 2 Python Bulk Fuel Management System**
+<h2 align="center">Guild 2 Python Bulk Fuel Management System Project</h2>
+
+<h3 align="center">Created by IT Students at Western Nebraska Community College</h3>
+
 
 ## *INTRODUCTION*
 - The Guild 2 Python Project is a python coding collaborative Team project for our Introduction to Computer Science course at Western Nebraska Community College.
@@ -150,4 +153,6 @@ I. To contribute:
 ## *CONCLUSION*
 - 
 
+<h3 align="left">Languages and Tools:</h3>
+<p align="left"> <a href="https://www.python.org" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="40" height="40"/> </a> <a href="https://www.sqlite.org/" target="_blank" rel="noreferrer"> <img src="https://www.vectorlogo.zone/logos/sqlite/sqlite-icon.svg" alt="sqlite" width="40" height="40"/> </a> </p>
 
