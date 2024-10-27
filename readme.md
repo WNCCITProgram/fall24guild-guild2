@@ -62,11 +62,16 @@ I.	GUI interface (UX Design)
       3. Create classes for customer and fuel tank objects.
       4. Create GUI framework
   4. Week 10:Feul Management OOP.
-  5. Week 11: Feul Management OOP.
-  6. Week 12:API 
-  7. Week 13: GUI
-  8. Week 14: GUI
-  9. Week 15: Project Completion
+    - Milestone tasks:
+      1. Research API's for fuel management program.
+      2. Build/contine to create GUI framework.
+      3. Edit/modify classes and csv writer.
+      4. Update readme for project.
+  6. Week 11: Feul Management OOP.
+  7. Week 12:API 
+  8. Week 13: GUI
+  9. Week 14: GUI
+  10. Week 15: Project Completion
   9.Week 16: Project Presentation
 
 ## *SYSTEM DESIGN*
