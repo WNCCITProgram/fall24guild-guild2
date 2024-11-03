@@ -2,6 +2,7 @@
     Name: gui.py
     Author: Guild Two
     Created: 27 October 2024
+    Edited: 02 November 2024
     Purpose: GUI module using tkinter to handle user interface.  
     File contains FuelManagementAPPGUI class and add customer 
     and check fuel status methods.
@@ -63,17 +64,23 @@ class FuelManagementAppGUI:
     # Get customer phone number
     # Get customer email
     def add_customer(self):
-        name = self.customer_name.get()  
-        address = self.customer_address.get()  
-        phone = self.customer_phone.get()  
-        email = self.customer_email.get()  
+        name = self.customer_name.get().strip()  
+        address = self.customer_address.get().strip() 
+        phone = self.customer_phone.get().strip()
+        email = self.customer_email.get().strip()
+
+        # Handle validation of basic user input
+        if not all([name, address, phone, email]):
+            messagebox.showerror("Error","You MUST fill out ALL fields.")
+            return
 
         # Use callback function to add the customer
         # If-else statement for message success and failure
         # messagebox.showinfo
         # messagebox.showerror
         if self.add_customer_callback(name, address, phone, email):
-            messagebox.showinfo("Success", "Customer added successfully!")  
+            messagebox.showinfo("Success", "Customer added successfully!")
+          
         else:
             messagebox.showerror("Error", "Failed to add customer.")  
 

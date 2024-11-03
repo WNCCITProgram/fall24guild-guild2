@@ -2,6 +2,7 @@
     Name: writer_package.py
     Author: Guild Two
     Created: 19 October 2024
+    Edited: 02 November 2024
     Purpose: Python program to utilize WriterPackage class from 
     writer_module.py for main functionality.
 """
@@ -106,8 +107,18 @@ class FuelManagementApp:
     # Displays a message to the user to show if an error occurred or
     # if save was successful.
     def add_customer(self):
-        name = self.customer_name.get()  # Get the customer name from the input field
+        name = self.customer_name.get().strip()  # Get the customer name from the input field
         """ Any additional necessary data such as address, phone, etc. can be added here. """
+        # Here's an example of additional fields to include
+        """ Replace these with actual input fields we want to include"""
+        address = "123 Elm Street"
+        phone = "2813308004"
+        email = "HeresJohnny@OverlookHotel.com"
+
+        # Handle any invalid user input for fields
+        if not name or not address or not phone or not email:
+            messagebox.showerror("Input Error", "You MUST fill out ALL fields.")
+            return
         
         new_customer = Customer(name, "Sample Address", "1234567890", "email@example.com", 1000)  # Create new customer object
         # Try-except block to handle error for saving a new customer
