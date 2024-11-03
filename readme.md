@@ -67,15 +67,21 @@ I.	GUI interface (UX Design)
   4. Week 10:Feul Management OOP.
     - Milestone tasks:
       1. Research API's for fuel management program.
-      2. Build/contine to create GUI framework.
+      2. Build/continue to create GUI framework.
       3. Edit/modify classes and csv writer.
       4. Update readme for project.
   6. Week 11: Feul Management OOP.
-  7. Week 12:API 
-  8. Week 13: GUI
-  9. Week 14: GUI
-  10. Week 15: Project Completion
-  9.Week 16: Project Presentation
+     - Milestone tasks:
+       1. API build/integration
+       2. GUI framework modification
+       3. Edit/modify classes
+       4. Testing/debugging
+       5. Update readme for project.
+  8. Week 12:API 
+  9. Week 13: Add New Functional Feature
+  10. Week 14: GUI
+  11. Week 15: Project Finalization
+  12. Week 16: Project Presentation
 
 ## *SYSTEM DESIGN*
   1. Utilize NumPy for scientific computation.
