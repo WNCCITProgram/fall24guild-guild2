@@ -15,11 +15,13 @@ from database import DatabaseManager
 from tkinter import messagebox, ttk  # Add ttk import for better looking table
 #~~~~
 
+# Abbigail - Might add a weather API into the GUI eventually (currently looking into it)
 class FuelManagementApp:
     def __init__(self):
         self.root = tk.Tk()
         self.db = DatabaseManager()
         self.setup_gui()
+
 
     def setup_gui(self):
         self.root.title("Customer Fuel Management System")
@@ -34,6 +36,7 @@ class FuelManagementApp:
             self.entries[label] = tk.Entry(self.root)
             self.entries[label].grid(row=i, column=1, padx=5, pady=2)
 
+        #Abbigail - Maybe make the window size slightly bigger and space out buttons?
         # Buttons
         tk.Button(self.root, text="Add Customer", 
                  command=self.add_customer).grid(row=len(labels), column=0, pady=10)
@@ -77,6 +80,7 @@ class FuelManagementApp:
         else:
             messagebox.showerror("Error", "Failed to add customer")
 
+    # Abbigail - Maybe we can change the fuel data from tank1, tank2, tank3 to 1,2,3 so it reads better in the program
     def check_fuel_status(self):
         # Simulate fuel data for demonstration
         fuel_data = {
@@ -411,6 +415,7 @@ class ViewTanksWindow:
                 ))
 #~~~~
 
+# Assign the App to a variable and run it
 if __name__ == "__main__":
     app = FuelManagementApp()
     app.run()
