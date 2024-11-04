@@ -1,0 +1,5 @@
+11-3-24 Richard
+This is the raw return from asking Claude to 
+combine/clean up our handwritten contributions
+then iterated upon with additions for some of
+the planned functions
