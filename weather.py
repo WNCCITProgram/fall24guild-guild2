@@ -6,6 +6,7 @@
 """
 
 # import the module
+# pip install python-weather
 import python_weather
 
 import asyncio

@@ -1,15 +1,21 @@
 # File 3: gui.py
 """
-    Name: gui.py
+    Name: gui_V2.py
     Authors: Guild Two (consolidated)
     Created: 03 November 2024
+    Revised: 10 November 2024
     Purpose: GUI implementation using tkinter
 """
-
+""" Revised with added error handling and weather API addition."""
 import tkinter as tk
 from tkinter import messagebox
 from models import Customer, FuelTank
 from database import DatabaseManager
+import asyncio
+import python_weather
+from weather_V2 import WeatherApp
+import re
+
 
 
 #~~~~ Claude Code
@@ -43,6 +49,8 @@ class FuelManagementApp:
                  command=self.add_customer).grid(row=len(labels), column=0, pady=10)
         tk.Button(self.root, text="Check Fuel Status", 
                  command=self.check_fuel_status).grid(row=len(labels), column=1, pady=10)
+        # Weather section - This integrates the WeatherApp class from weather_V2.py
+        self.weather_app = WeatherApp(self.root)  # Instantiate the WeatherApp class here
         #~~~~ Claude
         tk.Button(self.root, text="View Customers", 
                  command=self.show_customer_list).grid(
@@ -62,6 +70,14 @@ class FuelManagementApp:
                    values['Phone'], values['Email']]):
             messagebox.showerror("Error", "Please fill in all required fields")
             return
+        # Validation for phone and email
+        if not self.is_valid_phone(values['Phone']):
+            messagebox.showerror("Error", "Invalid phone number format")
+            return
+
+        if not self.is_valid_email(values['Email']):
+            messagebox.showerror("Error", "Invalid email format")
+            return
 
         # Create and save customer
         customer = Customer(
@@ -80,6 +96,16 @@ class FuelManagementApp:
             self._clear_entries()
         else:
             messagebox.showerror("Error", "Failed to add customer")
+
+    def is_valid_phone(self, phone):
+        """ Validate phone number format (e.g., 555-1234 or (555) 123-4567) """
+        phone_regex = re.compile(r"^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$")
+        return bool(phone_regex.match(phone))
+
+    def is_valid_email(self, email):
+        """ Validate email format """
+        email_regex = re.compile(r"[^@]+@[^@]+\.[^@]+")
+        return bool(email_regex.match(email))
 
     # Abbigail - Maybe we can change the fuel data from tank1, tank2, tank3 to 1,2,3 so it reads better in the program
     def check_fuel_status(self):
@@ -113,7 +139,35 @@ class FuelManagementApp:
     def run(self):
         self.root.mainloop()
         
-        
+# The WeatherApp class handles weather fetching functionality
+class WeatherApp:
+    def __init__(self, root):
+        """ Initialize the WeatherApp instance."""
+        self.root = root
+        self.weather_label = tk.Label(root, text="Weather Info will appear here")
+        self.weather_label.grid(row=0, column=0, pady=10)
+
+        # Add a button to fetch weather data
+        self.get_weather_button = tk.Button(root, text="Get Weather", command=self.get_weather)
+        self.get_weather_button.grid(row=0, column=2, pady=10)
+
+    async def fetch_weather(self):
+        """ Fetch weather data asynchronously using python-weather API."""
+        async with python_weather.Client(unit=python_weather.IMPERIAL) as client:
+            weather = await client.get('Akron')  # Example city (can be replaced with user input)
+            return weather.temperature
+
+    def get_weather(self):
+        """ Method to fetch weather and update the label asynchronously when the button is clicked."""
+        def update_weather():
+        # Use the Tkinter event loop to schedule the task
+            temp = asyncio.run(self.fetch_weather())  # Run the async function synchronously
+            self.weather_label.config(text=f"Temperature: {temp}°F")
+    
+    # Update weather on the event loop
+        self.root.after(0, update_weather)
+
+
 #~~~~ Claude
 class CustomerListWindow:
     def __init__(self, parent, db):
@@ -285,6 +339,7 @@ class AddTankWindow:
             # Validate input to catch invalid input and display error message
             capacity = int(self.entries['capacity'].get())
             contents = float(self.entries['contents'].get())
+            rental = self.entries['rental'].get().lower() in ['yes', 'y', '1']  # Normalize rental field
             # Create new tank object
             tank = FuelTank(
                 serial_number=self.entries['serial_number'].get(),
