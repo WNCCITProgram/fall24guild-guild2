@@ -12,11 +12,12 @@ from tkinter import messagebox
 from models import Customer, FuelTank
 from database import DatabaseManager
 import asyncio
-import python_weather
-from weather_V2 import WeatherApp
+import python_weather  # RD - import the weather_V2 function, not the python_weather
+# from weather_V2 import WeatherApp  # RD - Disable this, the class is repeated below
 import re
 
-
+# NOTE: had to manually install python weather to get it to work
+# is there a way to integrate the install so local machines dont have to pip it?
 
 #~~~~ Claude Code
 from tkinter import messagebox, ttk  # Add ttk import for better looking table
@@ -39,25 +40,25 @@ class FuelManagementApp:
         self.entries = {}
         
         for i, label in enumerate(labels):
-            tk.Label(self.root, text=label).grid(row=i, column=0, sticky=tk.W, padx=5, pady=2)
+            tk.Label(self.root, text=label).grid(row=i+1, column=0, sticky=tk.W, padx=5, pady=2)
             self.entries[label] = tk.Entry(self.root)
-            self.entries[label].grid(row=i, column=1, padx=5, pady=2)
+            self.entries[label].grid(row=i+1, column=1, padx=5, pady=2)
 
         #Abbigail - Maybe make the window size slightly bigger and space out buttons?
         # Buttons
         tk.Button(self.root, text="Add Customer", 
-                 command=self.add_customer).grid(row=len(labels), column=0, pady=10)
+                 command=self.add_customer).grid(row=(len(labels)+1), column=0, pady=10)
         tk.Button(self.root, text="Check Fuel Status", 
-                 command=self.check_fuel_status).grid(row=len(labels), column=1, pady=10)
+                 command=self.check_fuel_status).grid(row=(len(labels)+1), column=1, pady=10)
         # Weather section - This integrates the WeatherApp class from weather_V2.py
         self.weather_app = WeatherApp(self.root)  # Instantiate the WeatherApp class here
         #~~~~ Claude
         tk.Button(self.root, text="View Customers", 
                  command=self.show_customer_list).grid(
-                     row=len(labels), column=2, pady=10)
+                     row=(len(labels)+1), column=2, pady=10)
         tk.Button(self.root, text="View All Tanks", 
                  command=self.show_all_tanks).grid(
-                     row=len(labels), column=3, pady=10)
+                     row=(len(labels)+1), column=3, pady=10)
         #~~~~
 
     def add_customer(self):
@@ -140,29 +141,52 @@ class FuelManagementApp:
         self.root.mainloop()
         
 # The WeatherApp class handles weather fetching functionality
+# RD - This is a copy-import of the weather_V2
 class WeatherApp:
     def __init__(self, root):
         """ Initialize the WeatherApp instance."""
         self.root = root
-        self.weather_label = tk.Label(root, text="Weather Info will appear here")
-        self.weather_label.grid(row=0, column=0, pady=10)
+        self.weather_label = tk.Label(root, text="Local Weather: ")
+        # RD - We would rather the info go into the available text box
+        self.weather_label.grid(row=0, column=0, sticky=tk.E, padx=5, pady=2)
+        # needed adjustment, was over lapping
+        
+        # add a manual weather display so that it does not get auto generated from
+        # main gui 
+        self.weather_display = tk.Entry(root,width=10, state='readonly')
+        self.weather_display.grid(row=0, column=1,columnspan=2,sticky=tk.W, pady=2, padx=5)
 
         # Add a button to fetch weather data
         self.get_weather_button = tk.Button(root, text="Get Weather", command=self.get_weather)
-        self.get_weather_button.grid(row=0, column=2, pady=10)
+        self.get_weather_button.grid(row=0, column=2, sticky=tk.W, padx=5,pady=2)
+        
+        # RD - async issue correction attempts
+        self.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.loop)
 
     async def fetch_weather(self):
         """ Fetch weather data asynchronously using python-weather API."""
-        async with python_weather.Client(unit=python_weather.IMPERIAL) as client:
-            weather = await client.get('Akron')  # Example city (can be replaced with user input)
-            return weather.temperature
+        # RD - Exception catch
+        try:
+            async with python_weather.Client(unit=python_weather.IMPERIAL) as client:
+                weather = await client.get('Akron')  # Example city (can be replaced with user input)
+                return weather.temperature
+        except:
+            print(f"Fetch Error: Weather") # could/should have more specific error calls
+            return None
 
     def get_weather(self):
         """ Method to fetch weather and update the label asynchronously when the button is clicked."""
         def update_weather():
-        # Use the Tkinter event loop to schedule the task
+        # Use the Tkinter event loop to schedule the task.
+            self.weather_display.config(state='normal')
+            self.weather_display.delete(0, tk.END)
             temp = asyncio.run(self.fetch_weather())  # Run the async function synchronously
-            self.weather_label.config(text=f"Temperature: {temp}°F")
+            if temp is not None:
+                self.weather_display.insert(0, f"{temp}°F")
+            else:
+                self.weather_display.insert(0, "No Weather Here Boss")
+            self.weather_display.config(state='readonly')
     
     # Update weather on the event loop
         self.root.after(0, update_weather)
@@ -473,6 +497,9 @@ class ViewTanksWindow:
                     customer_name, tank_id, "Error processing tank data", "", "", "", "", "", "", "Error"
                 ))
 #~~~~
+
+
+
 
 # Assign the App to a variable and run it
 if __name__ == "__main__":

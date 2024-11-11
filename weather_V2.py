@@ -12,8 +12,9 @@
 # Import python weather to fetch weather data
 # pip install python-weather
 # Import tkinter to build GUI
-import asyncio
 import python_weather
+import asyncio
+
 import tkinter as tk
 
 class WeatherApp:
