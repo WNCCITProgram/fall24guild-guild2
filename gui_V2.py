@@ -109,6 +109,7 @@ class FuelManagementApp:
         return bool(email_regex.match(email))
 
     # Abbigail - Maybe we can change the fuel data from tank1, tank2, tank3 to 1,2,3 so it reads better in the program
+    # RD - Absolutely, this should be a priority hit for Week 13, its a main feature promotion
     def check_fuel_status(self):
         # Simulate fuel data for demonstration
         fuel_data = {
