@@ -1,4 +1,4 @@
-# File 3: gui.py
+
 """
     Name: gui_V2.py
     Authors: Guild Two (consolidated)
@@ -15,6 +15,7 @@ import asyncio
 import python_weather  # RD - import the weather_V2 function, not the python_weather
 # from weather_V2 import WeatherApp  # RD - Disable this, the class is repeated below
 import re
+from fuel_price import fetch_fuel_price # Import fuel price API fetch fuel price function
 
 # NOTE: had to manually install python weather to get it to work
 # is there a way to integrate the install so local machines dont have to pip it?
@@ -34,6 +35,9 @@ class FuelManagementApp:
     def setup_gui(self):
         self.root.title("Customer Fuel Management System")
 
+        # Set the window icon with ICO file
+        self.root.iconbitmap("gas.ico")  
+
         # Customer Information Fields
         labels = ['Customer Name', 'Address', 'Phone', 'Email', 
                  'Account Number', 'Optional Address', 'City', 'Zipcode']
@@ -44,22 +48,45 @@ class FuelManagementApp:
             self.entries[label] = tk.Entry(self.root)
             self.entries[label].grid(row=i+1, column=1, padx=5, pady=2)
 
+        # Set button style format with black background and white text
+        button_style = {"bg": "black", "fg": "white", "relief": "flat", "padx": 10, "pady": 5}
+
+        # Set second button style format with green background and white text
+        button_style_2 = {"bg": "green", "fg": "white", "relief": "flat", "padx": 10, "pady": 5}
+
         #Abbigail - Maybe make the window size slightly bigger and space out buttons?
         # Buttons
         tk.Button(self.root, text="Add Customer", 
-                 command=self.add_customer).grid(row=(len(labels)+1), column=0, pady=10)
+                command=self.add_customer, **button_style).grid(row=(len(labels)+1), column=0, pady=10)
         tk.Button(self.root, text="Check Fuel Status", 
-                 command=self.check_fuel_status).grid(row=(len(labels)+1), column=1, pady=10)
+                command=self.check_fuel_status, **button_style).grid(row=(len(labels)+1), column=1, pady=10)
         # Weather section - This integrates the WeatherApp class from weather_V2.py
         self.weather_app = WeatherApp(self.root)  # Instantiate the WeatherApp class here
         #~~~~ Claude
         tk.Button(self.root, text="View Customers", 
-                 command=self.show_customer_list).grid(
+                command=self.show_customer_list, **button_style).grid(
                      row=(len(labels)+1), column=2, pady=10)
         tk.Button(self.root, text="View All Tanks", 
-                 command=self.show_all_tanks).grid(
+                command=self.show_all_tanks, **button_style).grid(
                      row=(len(labels)+1), column=3, pady=10)
         #~~~~
+        # Week 13 Additional button to check fuel prices
+        tk.Button(self.root, text="Check Fuel Price", 
+                command=self.check_fuel_price, **button_style_2).grid(row=0, column=3, pady=10)
+    # Week 13 additional function, Check fuel price function
+    def check_fuel_price(self):
+        # Fetch fuel prices using the API
+        prices = fetch_fuel_price()
+
+        # Display results to user
+        # If-else statement to handle error for retrieval failure
+        if prices is not None:
+            message = "Fuel Prices for the last 8 months:\n\n"
+            for i, price in enumerate(prices, start=1):
+                message += f"Month {i}: ${price}\n"
+            messagebox.showinfo("Fuel Prices", message)
+        else:
+            messagebox.showerror("Error", "Failed to retrieve fuel price data.")   
 
     def add_customer(self):
         # Get values from entry fields
@@ -157,8 +184,11 @@ class WeatherApp:
         self.weather_display = tk.Entry(root,width=10, state='readonly')
         self.weather_display.grid(row=0, column=1,columnspan=2,sticky=tk.W, pady=2, padx=5)
 
+        # Set button style formatting with blue background and white text
+        button_style = {"bg": "blue", "fg": "white", "relief": "flat", "padx": 10, "pady": 5}
+
         # Add a button to fetch weather data
-        self.get_weather_button = tk.Button(root, text="Get Weather", command=self.get_weather)
+        self.get_weather_button = tk.Button(root, text="Get Weather", command=self.get_weather, **button_style)
         self.get_weather_button.grid(row=0, column=2, sticky=tk.W, padx=5,pady=2)
         
         # RD - async issue correction attempts

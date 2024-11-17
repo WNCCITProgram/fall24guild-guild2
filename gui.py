@@ -1,4 +1,4 @@
-# File 3: gui.py
+
 """
     Name: gui.py
     Authors: Guild Two (consolidated)
