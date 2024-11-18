@@ -7,6 +7,13 @@
     Purpose: GUI implementation using tkinter
 """
 """ Revised with added error handling and weather API addition."""
+
+# RD - Claude.ai inquired to regarding EIA api structure, the returns from EIA are
+# complicated, even with good documentation the desired returns are difficult to parse
+# for exactly what you want, can be a fire hose of data
+
+
+
 import tkinter as tk
 from tkinter import messagebox
 from models import Customer, FuelTank
@@ -80,14 +87,22 @@ class FuelManagementApp:
 
         # Display results to user
         # If-else statement to handle error for retrieval failure
-        if prices is not None:
+        """ if prices is not None:
             message = "Fuel Prices for the last 8 months:\n\n"
             for i, price in enumerate(prices, start=1):
                 message += f"Month {i}: ${price}\n"
             messagebox.showinfo("Fuel Prices", message)
         else:
             messagebox.showerror("Error", "Failed to retrieve fuel price data.")   
-
+            """
+        if prices['success']:
+            message = f"Base Price: ${prices['base_price']:.3f}/gal\nCustomer Price: ${prices['customer_price']:.3f}/gal"
+            messagebox.showinfo("Current Propane Prices", message)
+        else:
+            messagebox.showerror("Error", f"Failed to retrieve price data\n{prices.get('error', '')}")
+            
+            
+            
     def add_customer(self):
         # Get values from entry fields
         values = {label: entry.get().strip() 
