@@ -3,7 +3,8 @@
     Name: gui_V2.py
     Authors: Guild Two (consolidated)
     Created: 03 November 2024
-    Revised: 10 November 2024
+    First Revision: 10 November 2024
+    Second Revision: 28 November 2024
     Purpose: GUI implementation using tkinter
 """
 """ Revised with added error handling and weather API addition."""
@@ -13,7 +14,8 @@
 # for exactly what you want, can be a fire hose of data
 
 
-
+# Week 15 - Import webbrowser module to open Google maps link
+import webbrowser
 import tkinter as tk
 from tkinter import messagebox
 from models import Customer, FuelTank
@@ -80,6 +82,20 @@ class FuelManagementApp:
         # Week 13 Additional button to check fuel prices
         tk.Button(self.root, text="Check Fuel Price", 
                 command=self.check_fuel_price, **button_style_2).grid(row=0, column=3, pady=10)
+        # Week 15 - Additional button to open Google Maps
+        tk.Button(self.root, text="Google Maps", 
+                  command=self.open_google_maps, **button_style).grid(row=(len(labels)+2), column=0, pady=10)
+    def open_google_maps(self):
+        # Get address from the customer entry field
+        address = self.entries['Address'].get()
+        
+        if address:
+            # Create a URL that links to Google Maps with the customer's address
+            maps_url = f"https://www.google.com/maps?q={address.replace(' ', '+')}"
+            webbrowser.open(maps_url)
+        else:
+            messagebox.showerror("Error", "Please enter a valid address") # Display error message for invalid address
+
     # Week 13 additional function, Check fuel price function
     def check_fuel_price(self):
         # Fetch fuel prices using the API
