@@ -103,7 +103,7 @@ class DatabaseManager:
         with open(filename, 'r') as file:
             reader = csv.reader(file)
             return list(reader)
-    
+        
     #~~~ Claude
     def save_fuel_tank(self, customer_id, tank):
         """Save a new fuel tank and associate it with a customer"""

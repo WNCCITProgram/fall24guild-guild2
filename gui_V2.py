@@ -87,11 +87,25 @@ class FuelManagementApp:
                   command=self.open_google_maps, **button_style).grid(row=(len(labels)+2), column=0, pady=10)
     def open_google_maps(self):
         # Get address from the customer entry field
-        address = self.entries['Address'].get()
-        
+        address = self.entries['Address'].get().strip()
+        city = self.entries['City'].get().strip()
+        zipcode = self.entries['Zipcode'].get().strip()
+        # glue them together
+        address_parts = []
         if address:
+            address_parts.append(address)
+        if city:
+            address_parts.append(city)
+        if zipcode:
+            address_parts.append(zipcode)
+        
+        if address_parts:
+            # glue together with commas and + for url call
+            # this is annoying but necessary, urls dont have spaces natively
+            # and any url call is a giant pipeline command
+            full_addy = ','.join(address_parts).replace(' ','+')
             # Create a URL that links to Google Maps with the customer's address
-            maps_url = f"https://www.google.com/maps?q={address.replace(' ', '+')}"
+            maps_url = f"https://www.google.com/maps?q={full_addy}"
             webbrowser.open(maps_url)
         else:
             messagebox.showerror("Error", "Please enter a valid address") # Display error message for invalid address
@@ -169,23 +183,48 @@ class FuelManagementApp:
     # Abbigail - Maybe we can change the fuel data from tank1, tank2, tank3 to 1,2,3 so it reads better in the program
     # RD - Absolutely, this should be a priority hit for Week 13, its a main feature promotion
     def check_fuel_status(self):
-        # Simulate fuel data for demonstration
-        fuel_data = {
-            "tank1": 30,
-            "tank2": 20,
-            "tank3": 50,
-        }
+        # instead of alerting on below 40% simple lowball display
+        # can be adjusted upwards to get more than 5 tanks at a time
+        # full production release could have user-set variable stored in the DB or 
+        # just set at the time of call by the user
+        # no more simulation data
+        # tank db call
+        tanks = self.db.fetch_all_tanks()
+        tank_status = [] # hold the data
         
-        # Sort tanks by fuel level
-        sorted_tanks = sorted(fuel_data.items(), key=lambda x: x[1])
+        for tank in tanks:
+            try:
+                # get data fetch
+                customer_name = tank[-1] # customer name is the last column in the db
+                capacity = float(tank[4]) if tank[4] is not None else 0
+                # capacity = column 4 if there is any data to be had, defaults to 0
+                contents = float(tank[8]) if tank[8] is not None else 0
+                # same idea as capacity
+                # calc the percentage again, default value is 0
+                percent_full = (contents / capacity * 100) if capacity > 0 else 0
+                # glue it together
+                tank_status.append((customer_name, capacity, contents, percent_full))
+            except:
+                print(f"You dun goofed")
+                continue
+            
+        # sort out and get low 5
+        sorted_tanks = sorted(tank_status, key=lambda x: x[3])[:5] # cut off important
         
-        # Display results
-        message = "Tanks requiring attention:\n\n"
-        for tank_id, level in sorted_tanks:
-            if level < 40:  # Alert threshold
-                message += f"Tank {tank_id}: {level}%\n"
-        
+        # if the db aint empty and you got tanks to display
+        if sorted_tanks:
+            message = "Lowest 5 Tanks:\n\n"
+            for tank in sorted_tanks:
+                message += (f"Customer: {tank[0]}\n"
+                            f"Tank Size: {tank[1]:,.0f} gallons\n"
+                            f"Remaining: {tank[2]:,.0f} gallons\n"
+                            f"Status: {tank[3]:.1f}%\n\n")
+                
+        else:
+            message = "No tanks in database"
+            
         messagebox.showinfo("Fuel Status", message)
+                
 
     def _clear_entries(self):
         for entry in self.entries.values():
@@ -313,8 +352,13 @@ class CustomerListWindow:
         if item:
             # Select the item
             self.tree.selection_set(item)
-            customer_id = self.tree.item(item)['values'][0]
-            customer_name = self.tree.item(item)['values'][1]
+            # customer_id = self.tree.item(item)['values'][0]
+            # customer_name = self.tree.item(item)['values'][1]
+            
+            # had to edit the above, deprecate if the new version below works
+            values = self.tree.item(item)['values']
+            customer_id = values[0]
+            customer_name = values[1]
 
             # Create context menu
             menu = tk.Menu(self.window, tearoff=0)
@@ -322,7 +366,29 @@ class CustomerListWindow:
                            command=lambda: self.add_tank(customer_id, customer_name))
             menu.add_command(label="View Tanks", 
                            command=lambda: self.view_customer_tanks(customer_id, customer_name))
+            # add a map request to the customer list too
+            menu.add_command(label="Open in Maps",
+                       command=lambda: self.open_in_maps(values[2], values[6], values[7]))
             menu.post(event.x_root, event.y_root)
+            
+    def open_in_maps(self, address, city, zipcode):
+        # this is repetitive, but its a slightly different extraction of data
+        # from the other map call, which calls from an entry on the customer entry form
+        addy_parts = []
+        # force string, works better?
+        if address:
+            addy_parts.append(str(address))
+        if city:
+            addy_parts.append(str(city))
+        if zipcode:
+            addy_parts.append(str(zipcode))
+        
+        if addy_parts:
+            full_addy = ','.join(addy_parts).replace(' ', '+')
+            maps_url = f"https://www.google.com/maps?q={full_addy}"
+            webbrowser.open(maps_url)
+        else:
+            messagebox.showerror("Error", "No address information available")
 
     def add_tank(self, customer_id, customer_name):
         AddTankWindow(self.window, self.db, customer_id, customer_name, 
