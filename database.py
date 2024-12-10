@@ -1,4 +1,3 @@
-# File 2: database.py
 """
     Name: database.py
     Authors: Guild Two (consolidated)
@@ -6,7 +5,6 @@
     Revised: 10 November 2024
     Purpose: Database operations and data persistence
 """
-
 import sqlite3
 import csv
 

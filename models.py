@@ -1,11 +1,9 @@
-# File 1: models.py
 """
     Name: models.py
     Authors: Guild Two, Richard Dobson (consolidated)
     Created: 03 November 2024
     Purpose: Core data models for customers and fuel tanks
 """
-
 class Customer:
     def __init__(self, name="", address="", phone="", email="", 
                  account_number="", optional_addy="", city_addy="", 

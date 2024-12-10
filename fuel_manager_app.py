@@ -1,31 +1,25 @@
 
 """
-    Name: gui_V2.py
+    Name: fuel_manager_app.py
     Authors: Guild Two (consolidated)
     Created: 03 November 2024
-    First Revision: 10 November 2024
-    Second Revision: 28 November 2024
-    Purpose: GUI implementation using tkinter
+    Final Revisions: 12/09/2024
+    Purpose: Fuel Management App with Tkinter GUI
 """
 """ Revised with added error handling and weather API addition."""
+# homemade header imports
+from database import DatabaseManager
+from models import Customer, FuelTank
+from fuel_price import fetch_fuel_price # Import fuel price API fetch fuel price function
 
-# RD - Claude.ai inquired to regarding EIA api structure, the returns from EIA are
-# complicated, even with good documentation the desired returns are difficult to parse
-# for exactly what you want, can be a fire hose of data
-
-
-# Week 15 - Import webbrowser module to open Google maps link
+# third party imports
 import webbrowser
 import tkinter as tk
 from tkinter import messagebox
-from models import Customer, FuelTank
-from database import DatabaseManager
 import asyncio
 import python_weather  # RD - import the weather_V2 function, not the python_weather
 # from weather_V2 import WeatherApp  # RD - Disable this, the class is repeated below
 import re
-from fuel_price import fetch_fuel_price # Import fuel price API fetch fuel price function
-
 # NOTE: had to manually install python weather to get it to work
 # is there a way to integrate the install so local machines dont have to pip it?
 
@@ -33,13 +27,11 @@ from fuel_price import fetch_fuel_price # Import fuel price API fetch fuel price
 from tkinter import messagebox, ttk  # Add ttk import for better looking table
 #~~~~
 
-# Abbigail - Might add a weather API into the GUI eventually (currently looking into it)
 class FuelManagementApp:
     def __init__(self):
         self.root = tk.Tk()
         self.db = DatabaseManager()
         self.setup_gui()
-
 
     def setup_gui(self):
         self.root.title("Customer Fuel Management System")
@@ -59,18 +51,18 @@ class FuelManagementApp:
 
         # Set button style format with black background and white text
         button_style = {"bg": "black", "fg": "white", "relief": "flat", "padx": 10, "pady": 5}
-
         # Set second button style format with green background and white text
         button_style_2 = {"bg": "green", "fg": "white", "relief": "flat", "padx": 10, "pady": 5}
 
-        #Abbigail - Maybe make the window size slightly bigger and space out buttons?
         # Buttons
         tk.Button(self.root, text="Add Customer", 
                 command=self.add_customer, **button_style).grid(row=(len(labels)+1), column=0, pady=10)
         tk.Button(self.root, text="Check Fuel Status", 
                 command=self.check_fuel_status, **button_style).grid(row=(len(labels)+1), column=1, pady=10)
-        # Weather section - This integrates the WeatherApp class from weather_V2.py
+        
+        # Weather section 
         self.weather_app = WeatherApp(self.root)  # Instantiate the WeatherApp class here
+       
         #~~~~ Claude
         tk.Button(self.root, text="View Customers", 
                 command=self.show_customer_list, **button_style).grid(
@@ -78,6 +70,7 @@ class FuelManagementApp:
         tk.Button(self.root, text="View All Tanks", 
                 command=self.show_all_tanks, **button_style).grid(
                      row=(len(labels)+1), column=3, pady=10)
+        
         #~~~~
         # Week 13 Additional button to check fuel prices
         tk.Button(self.root, text="Check Fuel Price", 
@@ -85,6 +78,7 @@ class FuelManagementApp:
         # Week 15 - Additional button to open Google Maps
         tk.Button(self.root, text="Google Maps", 
                   command=self.open_google_maps, **button_style).grid(row=(len(labels)+2), column=0, pady=10)
+    
     def open_google_maps(self):
         # Get address from the customer entry field
         address = self.entries['Address'].get().strip()
@@ -117,22 +111,12 @@ class FuelManagementApp:
 
         # Display results to user
         # If-else statement to handle error for retrieval failure
-        """ if prices is not None:
-            message = "Fuel Prices for the last 8 months:\n\n"
-            for i, price in enumerate(prices, start=1):
-                message += f"Month {i}: ${price}\n"
-            messagebox.showinfo("Fuel Prices", message)
-        else:
-            messagebox.showerror("Error", "Failed to retrieve fuel price data.")   
-            """
         if prices['success']:
             message = f"Base Price: ${prices['base_price']:.3f}/gal\nCustomer Price: ${prices['customer_price']:.3f}/gal"
             messagebox.showinfo("Current Propane Prices", message)
         else:
             messagebox.showerror("Error", f"Failed to retrieve price data\n{prices.get('error', '')}")
-            
-            
-            
+                      
     def add_customer(self):
         # Get values from entry fields
         values = {label: entry.get().strip() 
@@ -180,14 +164,7 @@ class FuelManagementApp:
         email_regex = re.compile(r"[^@]+@[^@]+\.[^@]+")
         return bool(email_regex.match(email))
 
-    # Abbigail - Maybe we can change the fuel data from tank1, tank2, tank3 to 1,2,3 so it reads better in the program
-    # RD - Absolutely, this should be a priority hit for Week 13, its a main feature promotion
     def check_fuel_status(self):
-        # instead of alerting on below 40% simple lowball display
-        # can be adjusted upwards to get more than 5 tanks at a time
-        # full production release could have user-set variable stored in the DB or 
-        # just set at the time of call by the user
-        # no more simulation data
         # tank db call
         tanks = self.db.fetch_all_tanks()
         tank_status = [] # hold the data
@@ -239,18 +216,14 @@ class FuelManagementApp:
         self.root.mainloop()
         
 # The WeatherApp class handles weather fetching functionality
-# RD - This is a copy-import of the weather_V2
 class WeatherApp:
     def __init__(self, root):
         """ Initialize the WeatherApp instance."""
         self.root = root
         self.weather_label = tk.Label(root, text="Local Weather: ")
-        # RD - We would rather the info go into the available text box
-        self.weather_label.grid(row=0, column=0, sticky=tk.E, padx=5, pady=2)
-        # needed adjustment, was over lapping
         
-        # add a manual weather display so that it does not get auto generated from
-        # main gui 
+        self.weather_label.grid(row=0, column=0, sticky=tk.E, padx=5, pady=2)
+
         self.weather_display = tk.Entry(root,width=10, state='readonly')
         self.weather_display.grid(row=0, column=1,columnspan=2,sticky=tk.W, pady=2, padx=5)
 
@@ -273,7 +246,7 @@ class WeatherApp:
                 weather = await client.get('Akron')  # Example city (can be replaced with user input)
                 return weather.temperature
         except:
-            print(f"Fetch Error: Weather") # could/should have more specific error calls
+            print(f"Fetch Error: Weather")
             return None
 
     def get_weather(self):
@@ -352,10 +325,7 @@ class CustomerListWindow:
         if item:
             # Select the item
             self.tree.selection_set(item)
-            # customer_id = self.tree.item(item)['values'][0]
-            # customer_name = self.tree.item(item)['values'][1]
-            
-            # had to edit the above, deprecate if the new version below works
+
             values = self.tree.item(item)['values']
             customer_id = values[0]
             customer_name = values[1]
@@ -449,8 +419,6 @@ class CustomerListWindow:
         
         self.refresh_customer_list()
         messagebox.showinfo("Success", "Test data added successfully!")
-
-#~~~~
 
 #~~~ Claude
 class AddTankWindow:
@@ -624,10 +592,6 @@ class ViewTanksWindow:
                 self.tree.insert('', 'end', values=(
                     customer_name, tank_id, "Error processing tank data", "", "", "", "", "", "", "Error"
                 ))
-#~~~~
-
-
-
 
 # Assign the App to a variable and run it
 if __name__ == "__main__":

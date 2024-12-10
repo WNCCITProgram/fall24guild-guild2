@@ -5,7 +5,6 @@
     Purpose: Python API fuel price module called by main gui program
     that will display the monthly prices for natural gas products.
 """
-
 import requests
 import json
 from datetime import datetime, timedelta
@@ -57,11 +56,6 @@ def fetch_fuel_price():
         # "length": 5000     # might not need 5,000 data point returns
         "length": 4
     }
-    
-    # currently returning just the gallon price mark
-    # maybe a sparkline display of historical prices later?
-   
-   
     
     try:
         # Add the API key to the request headers
