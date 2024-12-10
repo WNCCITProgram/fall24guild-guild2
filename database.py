@@ -3,6 +3,7 @@
     Name: database.py
     Authors: Guild Two (consolidated)
     Created: 03 November 2024
+    Revised: 10 November 2024
     Purpose: Database operations and data persistence
 """
 
@@ -85,7 +86,9 @@ class DatabaseManager:
             ''')
             customers = self.cursor.fetchall()
             print(f"Fetched {len(customers)} customers from database")  # Debug print
-            return customers
+            # Handle error by ensuring fetch_all_customers returns and empty
+            # list and not 'None'
+            return customers if customers else []
         except sqlite3.Error as e:
             print(f"Database error: {e}")  # Debug print
             return []
@@ -100,7 +103,7 @@ class DatabaseManager:
         with open(filename, 'r') as file:
             reader = csv.reader(file)
             return list(reader)
-    
+        
     #~~~ Claude
     def save_fuel_tank(self, customer_id, tank):
         """Save a new fuel tank and associate it with a customer"""

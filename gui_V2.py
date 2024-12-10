@@ -1,16 +1,33 @@
 
 """
-    Name: gui.py
+    Name: gui_V2.py
     Authors: Guild Two (consolidated)
     Created: 03 November 2024
+    First Revision: 10 November 2024
+    Second Revision: 28 November 2024
     Purpose: GUI implementation using tkinter
 """
+""" Revised with added error handling and weather API addition."""
 
+# RD - Claude.ai inquired to regarding EIA api structure, the returns from EIA are
+# complicated, even with good documentation the desired returns are difficult to parse
+# for exactly what you want, can be a fire hose of data
+
+
+# Week 15 - Import webbrowser module to open Google maps link
+import webbrowser
 import tkinter as tk
 from tkinter import messagebox
 from models import Customer, FuelTank
 from database import DatabaseManager
+import asyncio
+import python_weather  # RD - import the weather_V2 function, not the python_weather
+# from weather_V2 import WeatherApp  # RD - Disable this, the class is repeated below
+import re
+from fuel_price import fetch_fuel_price # Import fuel price API fetch fuel price function
 
+# NOTE: had to manually install python weather to get it to work
+# is there a way to integrate the install so local machines dont have to pip it?
 
 #~~~~ Claude Code
 from tkinter import messagebox, ttk  # Add ttk import for better looking table
@@ -27,31 +44,95 @@ class FuelManagementApp:
     def setup_gui(self):
         self.root.title("Customer Fuel Management System")
 
+        # Set the window icon with ICO file
+        self.root.iconbitmap("gas.ico")  
+
         # Customer Information Fields
         labels = ['Customer Name', 'Address', 'Phone', 'Email', 
                  'Account Number', 'Optional Address', 'City', 'Zipcode']
         self.entries = {}
         
         for i, label in enumerate(labels):
-            tk.Label(self.root, text=label).grid(row=i, column=0, sticky=tk.W, padx=5, pady=2)
+            tk.Label(self.root, text=label).grid(row=i+1, column=0, sticky=tk.W, padx=5, pady=2)
             self.entries[label] = tk.Entry(self.root)
-            self.entries[label].grid(row=i, column=1, padx=5, pady=2)
+            self.entries[label].grid(row=i+1, column=1, padx=5, pady=2)
+
+        # Set button style format with black background and white text
+        button_style = {"bg": "black", "fg": "white", "relief": "flat", "padx": 10, "pady": 5}
+
+        # Set second button style format with green background and white text
+        button_style_2 = {"bg": "green", "fg": "white", "relief": "flat", "padx": 10, "pady": 5}
 
         #Abbigail - Maybe make the window size slightly bigger and space out buttons?
         # Buttons
         tk.Button(self.root, text="Add Customer", 
-                 command=self.add_customer).grid(row=len(labels), column=0, pady=10)
+                command=self.add_customer, **button_style).grid(row=(len(labels)+1), column=0, pady=10)
         tk.Button(self.root, text="Check Fuel Status", 
-                 command=self.check_fuel_status).grid(row=len(labels), column=1, pady=10)
+                command=self.check_fuel_status, **button_style).grid(row=(len(labels)+1), column=1, pady=10)
+        # Weather section - This integrates the WeatherApp class from weather_V2.py
+        self.weather_app = WeatherApp(self.root)  # Instantiate the WeatherApp class here
         #~~~~ Claude
         tk.Button(self.root, text="View Customers", 
-                 command=self.show_customer_list).grid(
-                     row=len(labels), column=2, pady=10)
+                command=self.show_customer_list, **button_style).grid(
+                     row=(len(labels)+1), column=2, pady=10)
         tk.Button(self.root, text="View All Tanks", 
-                 command=self.show_all_tanks).grid(
-                     row=len(labels), column=3, pady=10)
+                command=self.show_all_tanks, **button_style).grid(
+                     row=(len(labels)+1), column=3, pady=10)
         #~~~~
+        # Week 13 Additional button to check fuel prices
+        tk.Button(self.root, text="Check Fuel Price", 
+                command=self.check_fuel_price, **button_style_2).grid(row=0, column=3, pady=10)
+        # Week 15 - Additional button to open Google Maps
+        tk.Button(self.root, text="Google Maps", 
+                  command=self.open_google_maps, **button_style).grid(row=(len(labels)+2), column=0, pady=10)
+    def open_google_maps(self):
+        # Get address from the customer entry field
+        address = self.entries['Address'].get().strip()
+        city = self.entries['City'].get().strip()
+        zipcode = self.entries['Zipcode'].get().strip()
+        # glue them together
+        address_parts = []
+        if address:
+            address_parts.append(address)
+        if city:
+            address_parts.append(city)
+        if zipcode:
+            address_parts.append(zipcode)
+        
+        if address_parts:
+            # glue together with commas and + for url call
+            # this is annoying but necessary, urls dont have spaces natively
+            # and any url call is a giant pipeline command
+            full_addy = ','.join(address_parts).replace(' ','+')
+            # Create a URL that links to Google Maps with the customer's address
+            maps_url = f"https://www.google.com/maps?q={full_addy}"
+            webbrowser.open(maps_url)
+        else:
+            messagebox.showerror("Error", "Please enter a valid address") # Display error message for invalid address
 
+    # Week 13 additional function, Check fuel price function
+    def check_fuel_price(self):
+        # Fetch fuel prices using the API
+        prices = fetch_fuel_price()
+
+        # Display results to user
+        # If-else statement to handle error for retrieval failure
+        """ if prices is not None:
+            message = "Fuel Prices for the last 8 months:\n\n"
+            for i, price in enumerate(prices, start=1):
+                message += f"Month {i}: ${price}\n"
+            messagebox.showinfo("Fuel Prices", message)
+        else:
+            messagebox.showerror("Error", "Failed to retrieve fuel price data.")   
+            """
+        if prices['success']:
+            message = f"Base Price: ${prices['base_price']:.3f}/gal\nCustomer Price: ${prices['customer_price']:.3f}/gal"
+            messagebox.showinfo("Current Propane Prices", message)
+        else:
+            messagebox.showerror("Error", f"Failed to retrieve price data\n{prices.get('error', '')}")
+            
+            
+            
     def add_customer(self):
         # Get values from entry fields
         values = {label: entry.get().strip() 
@@ -61,6 +142,14 @@ class FuelManagementApp:
         if not all([values['Customer Name'], values['Address'], 
                    values['Phone'], values['Email']]):
             messagebox.showerror("Error", "Please fill in all required fields")
+            return
+        # Validation for phone and email
+        if not self.is_valid_phone(values['Phone']):
+            messagebox.showerror("Error", "Invalid phone number format")
+            return
+
+        if not self.is_valid_email(values['Email']):
+            messagebox.showerror("Error", "Invalid email format")
             return
 
         # Create and save customer
@@ -81,25 +170,61 @@ class FuelManagementApp:
         else:
             messagebox.showerror("Error", "Failed to add customer")
 
+    def is_valid_phone(self, phone):
+        """ Validate phone number format (e.g., 555-1234 or (555) 123-4567) """
+        phone_regex = re.compile(r"^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$")
+        return bool(phone_regex.match(phone))
+
+    def is_valid_email(self, email):
+        """ Validate email format """
+        email_regex = re.compile(r"[^@]+@[^@]+\.[^@]+")
+        return bool(email_regex.match(email))
+
     # Abbigail - Maybe we can change the fuel data from tank1, tank2, tank3 to 1,2,3 so it reads better in the program
+    # RD - Absolutely, this should be a priority hit for Week 13, its a main feature promotion
     def check_fuel_status(self):
-        # Simulate fuel data for demonstration
-        fuel_data = {
-            "tank1": 30,
-            "tank2": 20,
-            "tank3": 50,
-        }
+        # instead of alerting on below 40% simple lowball display
+        # can be adjusted upwards to get more than 5 tanks at a time
+        # full production release could have user-set variable stored in the DB or 
+        # just set at the time of call by the user
+        # no more simulation data
+        # tank db call
+        tanks = self.db.fetch_all_tanks()
+        tank_status = [] # hold the data
         
-        # Sort tanks by fuel level
-        sorted_tanks = sorted(fuel_data.items(), key=lambda x: x[1])
+        for tank in tanks:
+            try:
+                # get data fetch
+                customer_name = tank[-1] # customer name is the last column in the db
+                capacity = float(tank[4]) if tank[4] is not None else 0
+                # capacity = column 4 if there is any data to be had, defaults to 0
+                contents = float(tank[8]) if tank[8] is not None else 0
+                # same idea as capacity
+                # calc the percentage again, default value is 0
+                percent_full = (contents / capacity * 100) if capacity > 0 else 0
+                # glue it together
+                tank_status.append((customer_name, capacity, contents, percent_full))
+            except:
+                print(f"You dun goofed")
+                continue
+            
+        # sort out and get low 5
+        sorted_tanks = sorted(tank_status, key=lambda x: x[3])[:5] # cut off important
         
-        # Display results
-        message = "Tanks requiring attention:\n\n"
-        for tank_id, level in sorted_tanks:
-            if level < 40:  # Alert threshold
-                message += f"Tank {tank_id}: {level}%\n"
-        
+        # if the db aint empty and you got tanks to display
+        if sorted_tanks:
+            message = "Lowest 5 Tanks:\n\n"
+            for tank in sorted_tanks:
+                message += (f"Customer: {tank[0]}\n"
+                            f"Tank Size: {tank[1]:,.0f} gallons\n"
+                            f"Remaining: {tank[2]:,.0f} gallons\n"
+                            f"Status: {tank[3]:.1f}%\n\n")
+                
+        else:
+            message = "No tanks in database"
+            
         messagebox.showinfo("Fuel Status", message)
+                
 
     def _clear_entries(self):
         for entry in self.entries.values():
@@ -113,7 +238,61 @@ class FuelManagementApp:
     def run(self):
         self.root.mainloop()
         
+# The WeatherApp class handles weather fetching functionality
+# RD - This is a copy-import of the weather_V2
+class WeatherApp:
+    def __init__(self, root):
+        """ Initialize the WeatherApp instance."""
+        self.root = root
+        self.weather_label = tk.Label(root, text="Local Weather: ")
+        # RD - We would rather the info go into the available text box
+        self.weather_label.grid(row=0, column=0, sticky=tk.E, padx=5, pady=2)
+        # needed adjustment, was over lapping
         
+        # add a manual weather display so that it does not get auto generated from
+        # main gui 
+        self.weather_display = tk.Entry(root,width=10, state='readonly')
+        self.weather_display.grid(row=0, column=1,columnspan=2,sticky=tk.W, pady=2, padx=5)
+
+        # Set button style formatting with blue background and white text
+        button_style = {"bg": "blue", "fg": "white", "relief": "flat", "padx": 10, "pady": 5}
+
+        # Add a button to fetch weather data
+        self.get_weather_button = tk.Button(root, text="Get Weather", command=self.get_weather, **button_style)
+        self.get_weather_button.grid(row=0, column=2, sticky=tk.W, padx=5,pady=2)
+        
+        # RD - async issue correction attempts
+        self.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.loop)
+
+    async def fetch_weather(self):
+        """ Fetch weather data asynchronously using python-weather API."""
+        # RD - Exception catch
+        try:
+            async with python_weather.Client(unit=python_weather.IMPERIAL) as client:
+                weather = await client.get('Akron')  # Example city (can be replaced with user input)
+                return weather.temperature
+        except:
+            print(f"Fetch Error: Weather") # could/should have more specific error calls
+            return None
+
+    def get_weather(self):
+        """ Method to fetch weather and update the label asynchronously when the button is clicked."""
+        def update_weather():
+        # Use the Tkinter event loop to schedule the task.
+            self.weather_display.config(state='normal')
+            self.weather_display.delete(0, tk.END)
+            temp = asyncio.run(self.fetch_weather())  # Run the async function synchronously
+            if temp is not None:
+                self.weather_display.insert(0, f"{temp}°F")
+            else:
+                self.weather_display.insert(0, "No Weather Here Boss")
+            self.weather_display.config(state='readonly')
+    
+    # Update weather on the event loop
+        self.root.after(0, update_weather)
+
+
 #~~~~ Claude
 class CustomerListWindow:
     def __init__(self, parent, db):
@@ -173,8 +352,13 @@ class CustomerListWindow:
         if item:
             # Select the item
             self.tree.selection_set(item)
-            customer_id = self.tree.item(item)['values'][0]
-            customer_name = self.tree.item(item)['values'][1]
+            # customer_id = self.tree.item(item)['values'][0]
+            # customer_name = self.tree.item(item)['values'][1]
+            
+            # had to edit the above, deprecate if the new version below works
+            values = self.tree.item(item)['values']
+            customer_id = values[0]
+            customer_name = values[1]
 
             # Create context menu
             menu = tk.Menu(self.window, tearoff=0)
@@ -182,7 +366,29 @@ class CustomerListWindow:
                            command=lambda: self.add_tank(customer_id, customer_name))
             menu.add_command(label="View Tanks", 
                            command=lambda: self.view_customer_tanks(customer_id, customer_name))
+            # add a map request to the customer list too
+            menu.add_command(label="Open in Maps",
+                       command=lambda: self.open_in_maps(values[2], values[6], values[7]))
             menu.post(event.x_root, event.y_root)
+            
+    def open_in_maps(self, address, city, zipcode):
+        # this is repetitive, but its a slightly different extraction of data
+        # from the other map call, which calls from an entry on the customer entry form
+        addy_parts = []
+        # force string, works better?
+        if address:
+            addy_parts.append(str(address))
+        if city:
+            addy_parts.append(str(city))
+        if zipcode:
+            addy_parts.append(str(zipcode))
+        
+        if addy_parts:
+            full_addy = ','.join(addy_parts).replace(' ', '+')
+            maps_url = f"https://www.google.com/maps?q={full_addy}"
+            webbrowser.open(maps_url)
+        else:
+            messagebox.showerror("Error", "No address information available")
 
     def add_tank(self, customer_id, customer_name):
         AddTankWindow(self.window, self.db, customer_id, customer_name, 
@@ -285,6 +491,7 @@ class AddTankWindow:
             # Validate input to catch invalid input and display error message
             capacity = int(self.entries['capacity'].get())
             contents = float(self.entries['contents'].get())
+            rental = self.entries['rental'].get().lower() in ['yes', 'y', '1']  # Normalize rental field
             # Create new tank object
             tank = FuelTank(
                 serial_number=self.entries['serial_number'].get(),
@@ -418,6 +625,9 @@ class ViewTanksWindow:
                     customer_name, tank_id, "Error processing tank data", "", "", "", "", "", "", "Error"
                 ))
 #~~~~
+
+
+
 
 # Assign the App to a variable and run it
 if __name__ == "__main__":
