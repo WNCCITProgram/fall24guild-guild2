@@ -37,7 +37,7 @@ class FuelManagementApp:
         self.root.title("Customer Fuel Management System")
 
         # Set the window icon with ICO file
-        self.root.iconbitmap("gas.ico")  
+        # self.root.iconbitmap("gas.ico")  turned off for .exe export
 
         # Customer Information Fields
         labels = ['Customer Name', 'Address', 'Phone', 'Email', 
